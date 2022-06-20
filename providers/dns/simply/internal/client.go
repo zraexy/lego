@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const defaultBaseURL = "https://api.simply.com/1/"
+const defaultBaseURL = "https://api.simply.com/2/"
 
 // Client is a Simply.com API client.
 type Client struct {
@@ -99,7 +99,7 @@ func (c *Client) DeleteRecord(zoneName string, id int64) error {
 }
 
 func (c *Client) do(zoneName string, endpoint string, reqMethod string, reqBody []byte) (*apiResponse, error) {
-	reqURL, err := c.baseURL.Parse(path.Join(c.baseURL.Path, c.accountName, c.apiKey, "my", "products", zoneName, "dns", "records", endpoint))
+	reqURL, err := c.baseURL.Parse(path.Join(c.baseURL.Path, "my", "products", zoneName, "dns", "records", endpoint))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse endpoint: %w", err)
 	}
@@ -108,6 +108,8 @@ func (c *Client) do(zoneName string, endpoint string, reqMethod string, reqBody 
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
+
+	req.SetBasicAuth(c.accountName, c.apiKey)
 
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
